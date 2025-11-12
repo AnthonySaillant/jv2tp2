@@ -8,6 +8,8 @@ TagManager:
   - Tank
   - VirtualCamera
   - GameManager
+  - Trash
+  - Character
   layers:
   - Default
   - TransparentFX

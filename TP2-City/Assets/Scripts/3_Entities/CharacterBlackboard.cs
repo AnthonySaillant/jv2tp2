@@ -18,6 +18,8 @@ public class CharacterBlackboard : MonoBehaviour
     [field:SerializeField] public Building House { get; private set; }
     [field:SerializeField] public Building Workplace { get; private set; }
     [field:SerializeField] public Character[] Friends { get; private set; } = { };
+    [field: SerializeField] public GameObject LastSeenTrash { get; set; }
+    [field: SerializeField] public Character LastSeenFriend { get; set; }
     public Building[] HouseBuildings => gameManager.CityObjects.HouseBuildings;
     public Building[] WorkplaceBuildings => gameManager.CityObjects.WorkplaceBuildings;
     public Building[] FoodBuildings => gameManager.CityObjects.FoodBuildings;
