@@ -64,8 +64,16 @@ public class CharacterHUD : MonoBehaviour
 
     private void SetTargetCharacter(Character character)
     {
+        foreach (var charac in characters)
+        {
+            var pointer = charac.transform.Find("Pointer");
+            pointer.gameObject.SetActive(false);
+        }
+
         targetCharacter = character;
         stateMachine = targetCharacter.GetComponent<CharacterStateMachine>();
         vitals = targetCharacter.GetComponent<CharacterVitals>();
+        var targetPointer = targetCharacter.transform.Find("Pointer");
+        targetPointer.gameObject.SetActive(true);
     }
 }
