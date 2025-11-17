@@ -48,7 +48,7 @@ public class CharacterHUD : MonoBehaviour
 
         nameText.text = targetCharacter.FullName;
         avatarImage.sprite = targetCharacter.Avatar;
-        if (stateMachine.TrashBehaviour == CityCharacterTrashBehaviour.PickUp)
+        if (stateMachine.TrashBehaviour == CharacterStateMachine.CityCharacterTrashBehaviour.PickUp)
         {
             stateText.text = "Propre";
         }

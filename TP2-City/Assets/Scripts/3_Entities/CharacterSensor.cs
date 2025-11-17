@@ -13,7 +13,7 @@ public class CharacterSensor : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Trash") && stateMachine.TrashBehaviour == CityCharacterTrashBehaviour.PickUp)
+        if (other.gameObject.CompareTag("Trash") && stateMachine.TrashBehaviour == CharacterStateMachine.CityCharacterTrashBehaviour.PickUp)
         {
             blackboard.LastSeenTrash = other.gameObject;
             Debug.Log("Poubelle");
