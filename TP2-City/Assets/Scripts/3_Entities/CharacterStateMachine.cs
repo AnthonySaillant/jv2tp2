@@ -1,38 +1,54 @@
 ﻿using UnityEngine;
 
-// Il s'agit de la classe dans laquelle vous allez implémenter la machine à état. Vous aurez tout particulièrement à
-// compléter la méthode "ChangeCharacterState" (Vous aurez pour cela besoin de créer une énumération des prochains états)
-//
-// Notez que c'est aussi ici que les personnages "malpropres" sont gérés. Pour les personnages "malpropre", cette classe
-// contient une méthode qui, de temps en temps, met le booléen "shouldThrowTrash" du CharacterBlackboard à "true". Dans
-// votre machine à état, cela signifie qu'il est temps de changer d'état pour lancer un déchet.
-//
-// Au cas où ce n'était pas encore clair, vous avez à modifier cette classe pour le travail.
 public class CharacterStateMachine : MonoBehaviour
 {
+    public enum CharacterStateType
+    {
+        Move,
+        Work,
+        Eat,
+        Socialize,
+        Sleep,
+        TakeTrash,
+        ThrowTrash,
+        Greet
+    }
+
+    public enum CityCharacterTrashBehaviour
+    {
+        Ignore,
+        PickUp,
+        Throw
+    }
+
     [Header("Behaviour")]
     [SerializeField] private CityCharacterTrashBehaviour trashBehaviour = CityCharacterTrashBehaviour.Ignore;
     [SerializeField, Range(0, 100)] private float throwTrashChances = 5f;
     [SerializeField, Min(0)] private float throwTrashCheckDelay = 1f;
 
     private Character character;
+    private CharacterBaseState currentState;
     private float throwTrashCheckTimer;
 
-    public string CurrentStateName => "None";
+    public string CurrentStateName => currentState != null ? currentState.GetType().Name : "None";
     public CityCharacterTrashBehaviour TrashBehaviour => trashBehaviour;
 
     private void Awake()
     {
-        // Get dependencies.
         character = GetComponent<Character>();
-
-        // Init timers.
-        throwTrashCheckTimer = 0;
+        throwTrashCheckTimer = 0f;
     }
 
     private void Update()
     {
         UpdateTimers();
+
+        // Appeler Act et ManageTransitions de l'état courant
+        if (currentState != null)
+        {
+            currentState.Act();
+            currentState.ManageTransitions();
+        }
     }
 
     private void UpdateTimers()
@@ -52,15 +68,43 @@ public class CharacterStateMachine : MonoBehaviour
         }
     }
 
-    private void ChangeCharacterState()
+    // --- Méthode pour changer d'état ---
+    public void ChangeCharacterState(CharacterStateType newStateType)
     {
-        // TODO : Mettre à jour la machine à état.
-    }  
-}
+        // Détruire ou désactiver l'état courant si nécessaire
+        if (currentState != null)
+        {
+            Destroy(currentState);
+            currentState = null;
+        }
 
-public enum CityCharacterTrashBehaviour
-{
-    Ignore,
-    PickUp,
-    Throw
+        // Créer un nouvel état en fonction de l'énumération
+        switch (newStateType)
+        {
+            case CharacterStateType.Move:
+                currentState = gameObject.AddComponent<CharacterStateMove>();
+                break;
+            case CharacterStateType.Work:
+                currentState = gameObject.AddComponent<CharacterStateWork>();
+                break;
+            case CharacterStateType.Eat:
+                currentState = gameObject.AddComponent<CharacterStateEat>();
+                break;
+            case CharacterStateType.Sleep:
+                currentState = gameObject.AddComponent<CharacterStateSleep>();
+                break;
+            case CharacterStateType.Socialize:
+                currentState = gameObject.AddComponent<CharacterStateSocialize>();
+                break;
+            case CharacterStateType.TakeTrash:
+                currentState = gameObject.AddComponent<CharacterStateTakeTrash>();
+                break;
+            case CharacterStateType.ThrowTrash:
+                currentState = gameObject.AddComponent<CharacterStateThrowTrash>();
+                break;
+            case CharacterStateType.Greet:
+                currentState = gameObject.AddComponent<CharacterStateGreet>();
+                break;
+        }
+    }
 }

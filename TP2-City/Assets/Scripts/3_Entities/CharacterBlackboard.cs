@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 // Mémoire du personnage.
 //
@@ -24,11 +25,19 @@ public class CharacterBlackboard : MonoBehaviour
     public Building[] SocialBuildings => gameManager.CityObjects.SocialBuildings;
     
     [Header("Memory")]
-    [field:SerializeField] public bool ShouldThrowTrash { get; set; }
-    
+    [field: SerializeField] public bool ShouldThrowTrash { get; set; }
+
     // TODO : Ajouter ici les autres éléments à conserver en mémoire.
     //        Notez que la syntaxe est légèrement différente de ce que vous avez été habitué : il y a un "field:" devant
     //        le nom de l'annotation [SerializeField]. C'est pour gérer correctement les propriétés C# avec Unity.
+
+    public IDestination TargetDestination { get; set; }
+    [field: SerializeField] public Trash TargetTrash { get; set; }
+    [field: SerializeField] public Character TargetFriend { get; set; }
+
+    [field: SerializeField] public bool NeedsFood { get; set; }
+    [field: SerializeField] public bool NeedsSocial { get; set; }
+    [field: SerializeField] public bool NeedsSleep { get; set; }
     
     private GameManager gameManager;
     
@@ -41,6 +50,27 @@ public class CharacterBlackboard : MonoBehaviour
     // Blackboard maintenance.
     private void Update()
     {
-        
+        if (TargetFriend != null && !TargetFriend.IsAvailable)
+        {
+            TargetFriend = null;
+        }
+    }
+
+    public Building GetRandomFoodBuilding()
+    {
+        if (FoodBuildings.Length == 0)
+            return null;
+
+        int index = UnityEngine.Random.Range(0, FoodBuildings.Length);
+        return FoodBuildings[index];
+    }
+
+    public Building GetRandomSocialBuilding()
+    {
+        if (SocialBuildings.Length == 0)
+            return null;
+
+        int index = UnityEngine.Random.Range(0, SocialBuildings.Length);
+        return SocialBuildings[index];
     }
 }
