@@ -196,10 +196,6 @@ public class Character : MonoBehaviour, IDestination
 
             // Wait for animation to end.
             yield return new WaitUntil(() => !characterAnimation.IsPlayingThrowAnimation());
-
-            // Remove friend from memory.
-            // TODO : Enlevez l'ami salué de la mémoire du personnage. Par exemple :
-            //      blackboard.Friend = null;
         }
 
         StartCoroutine(Routine());
@@ -241,18 +237,15 @@ public class Character : MonoBehaviour, IDestination
     }
 
 
-    //Pas du code de base
     public IDestination SelectRandomDestination()
     {
-        // Besoin de manger → bâtiment alimentaire
         if (blackboard.NeedsFood)
         {
             var foodBuilding = blackboard.GetRandomFoodBuilding();
             if (foodBuilding != null)
-                return foodBuilding;   // <--- Building implémente IDestination
+                return foodBuilding;
         }
 
-        // Besoin social → bâtiment social
         if (blackboard.NeedsSocial)
         {
             var socialBuilding = blackboard.GetRandomSocialBuilding();
@@ -260,12 +253,10 @@ public class Character : MonoBehaviour, IDestination
                 return socialBuilding;
         }
 
-        // Aller au travail si disponible
         if (blackboard.Workplace != null)
             return blackboard.Workplace;
 
-        // Sinon, rester sur place → on retourne *le personnage lui-même*
-        return this; // Character implémente IDestination
+        return this;
     }
 
 }

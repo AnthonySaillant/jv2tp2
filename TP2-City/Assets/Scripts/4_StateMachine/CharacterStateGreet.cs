@@ -1,10 +1,11 @@
-using UnityEngine;
-
 public class CharacterStateGreet : CharacterBaseState
 {
+    private Character currentFriend;
+
     protected override void Awake()
     {
         base.Awake();
+        currentFriend = null;
     }
 
     public override void Act()
@@ -13,7 +14,11 @@ public class CharacterStateGreet : CharacterBaseState
 
         if (blackboard.LastSeenFriend != null && !character.IsGreetingCharacter())
         {
-            character.GreetCharacter(blackboard.LastSeenFriend);
+            if (currentFriend != blackboard.LastSeenFriend)
+            {
+                currentFriend = blackboard.LastSeenFriend;
+                character.GreetCharacter(currentFriend);
+            }
         }
     }
 
@@ -24,6 +29,7 @@ public class CharacterStateGreet : CharacterBaseState
             stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.Move);
 
             blackboard.LastSeenFriend = null;
+            currentFriend = null;
         }
     }
 }

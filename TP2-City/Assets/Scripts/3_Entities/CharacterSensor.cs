@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Linq;
 using UnityEngine;
 
 public class CharacterSensor : MonoBehaviour
@@ -13,25 +15,21 @@ public class CharacterSensor : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Trash") && stateMachine.TrashBehaviour == CharacterStateMachine.CityCharacterTrashBehaviour.PickUp)
+        if (other.gameObject.CompareTag("Trash") &&
+            stateMachine.TrashBehaviour == CharacterStateMachine.CityCharacterTrashBehaviour.PickUp)
         {
             blackboard.LastSeenTrash = other.gameObject;
-            Debug.Log("Poubelle");
         }
-        if (other.isTrigger && other.gameObject.CompareTag("Character"))
+        else if (other.gameObject.CompareTag("Character"))
         {
-            Character character = other.GetComponent<Character>();
-            foreach (var friend in blackboard.Friends)
+            Character friend = other.GetComponent<Character>();
+            if (friend != null && blackboard.Friends.Contains(friend))
             {
-                if (friend == character)
-                {
-                    blackboard.LastSeenFriend = character;
-                    Debug.Log("Ami");
-                    break;
-                }
+                blackboard.LastSeenFriend = friend;
             }
         }
     }
+
 
     private void OnTriggerExit(Collider other)
     {

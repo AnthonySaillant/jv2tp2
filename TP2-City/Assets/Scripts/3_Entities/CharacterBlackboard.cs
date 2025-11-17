@@ -34,6 +34,8 @@ public class CharacterBlackboard : MonoBehaviour
     //        le nom de l'annotation [SerializeField]. C'est pour gérer correctement les propriétés C# avec Unity.
 
     public IDestination TargetDestination { get; set; }
+    public CharacterStateMachine.CharacterStateType? NextState { get; set; }
+
     [field: SerializeField] public Trash TargetTrash { get; set; }
     [field: SerializeField] public Character TargetFriend { get; set; }
 
@@ -43,13 +45,12 @@ public class CharacterBlackboard : MonoBehaviour
     
     private GameManager gameManager;
     
-    // Initialization.
     private void Awake()
     {
         gameManager = Finder.GameManager;
+        NextState = CharacterStateMachine.CharacterStateType.Work;
     }
     
-    // Blackboard maintenance.
     private void Update()
     {
         if (TargetFriend != null && !TargetFriend.IsAvailable)

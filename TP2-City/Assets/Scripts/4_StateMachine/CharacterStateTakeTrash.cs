@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class CharacterStateTakeTrash : CharacterBaseState
 {
+    private bool startedPicking = false;
+
     protected override void Awake()
     {
         base.Awake();
@@ -21,9 +23,11 @@ public class CharacterStateTakeTrash : CharacterBaseState
             }
             else
             {
-                character.PickUpTrash(blackboard.TargetTrash);
-
-                blackboard.TargetTrash = null;
+                if (!startedPicking && !character.IsPickingTrash())
+                {
+                    character.PickUpTrash(blackboard.TargetTrash);
+                    startedPicking = true;
+                }
             }
         }
     }
@@ -33,6 +37,7 @@ public class CharacterStateTakeTrash : CharacterBaseState
         if ((blackboard.TargetTrash == null || !blackboard.TargetTrash.IsAvailable) && !character.IsPickingTrash())
         {
             blackboard.TargetTrash = null;
+            startedPicking = false;
             stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.Move);
         }
     }

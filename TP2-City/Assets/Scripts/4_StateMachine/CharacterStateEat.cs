@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class CharacterStateEat : CharacterBaseState
 {
+    private bool enteredState = false;
+
     protected override void Awake()
     {
         base.Awake();
@@ -10,33 +12,51 @@ public class CharacterStateEat : CharacterBaseState
     public override void Act()
     {
         vitals.LowerHunger();
+
+        if (!enteredState)
+        {
+            character.MakeInvisible();
+            enteredState = true;
+        }
     }
 
     public override void ManageTransitions()
     {
-        if (vitals.IsHungerAboveThreshold)
+        if (vitals.IsHungerBellowTarget)
         {
-            if (vitals.IsLonelinessBellowTarget)
+            if (vitals.IsLonelinessAboveThreshold)
             {
                 var socialBuilding = blackboard.GetRandomSocialBuilding();
                 if (socialBuilding != null)
                 {
+                    character.MakeVisible();
+                    enteredState = false;
+
                     blackboard.TargetDestination = socialBuilding;
+                    blackboard.NextState = CharacterStateMachine.CharacterStateType.Socialize;
                     stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.Move);
+                    return;
                 }
             }
 
-            else if (vitals.IsSleepinessBellowTarget)
+            if (!vitals.IsSleepinessAboveThreshold && blackboard.House != null)
             {
-                if (blackboard.House != null)
-                {
-                    blackboard.TargetDestination = blackboard.House;
-                    stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.Move);
-                }
+                character.MakeVisible();
+                enteredState = false;
+
+                blackboard.TargetDestination = blackboard.House;
+                blackboard.NextState = CharacterStateMachine.CharacterStateType.Sleep;
+                stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.Move);
+                return;
             }
-            else
+
+            if (blackboard.Workplace != null)
             {
+                character.MakeVisible();
+                enteredState = false;
+
                 blackboard.TargetDestination = blackboard.Workplace;
+                blackboard.NextState = CharacterStateMachine.CharacterStateType.Work;
                 stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.Move);
             }
         }

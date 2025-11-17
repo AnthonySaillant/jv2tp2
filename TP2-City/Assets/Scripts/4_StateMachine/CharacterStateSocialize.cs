@@ -14,29 +14,35 @@ public class CharacterStateSocialize : CharacterBaseState
 
     public override void ManageTransitions()
     {
-        if (vitals.IsLonelinessAboveThreshold)
+        if (vitals.IsLonelinessBellowTarget)
         {
-            if (vitals.IsHungerBellowTarget)
+            if (!vitals.IsHungerBellowTarget)
             {
                 var foodBuilding = blackboard.GetRandomFoodBuilding();
                 if (foodBuilding != null)
                 {
                     blackboard.TargetDestination = foodBuilding;
+                    blackboard.NextState = CharacterStateMachine.CharacterStateType.Eat;
                     stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.Move);
+                    return;
                 }
             }
 
-            else if (vitals.IsSleepinessBellowTarget)
+            if (!vitals.IsSleepinessBellowTarget)
             {
                 if (blackboard.House != null)
                 {
                     blackboard.TargetDestination = blackboard.House;
+                    blackboard.NextState = CharacterStateMachine.CharacterStateType.Sleep;
                     stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.Move);
+                    return;
                 }
             }
-            else
+
+            if (blackboard.Workplace != null)
             {
                 blackboard.TargetDestination = blackboard.Workplace;
+                blackboard.NextState = CharacterStateMachine.CharacterStateType.Work;
                 stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.Move);
             }
         }

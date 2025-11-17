@@ -16,6 +16,7 @@ public class CharacterStateThrowTrash : CharacterBaseState
         if (blackboard.ShouldThrowTrash && !character.IsThrowingTrash())
         {
             character.ThrowTrash();
+            blackboard.ShouldThrowTrash = false;
         }
     }
 

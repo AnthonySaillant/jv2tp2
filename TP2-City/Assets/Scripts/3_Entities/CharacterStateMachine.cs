@@ -28,6 +28,7 @@ public class CharacterStateMachine : MonoBehaviour
 
     private Character character;
     private CharacterBaseState currentState;
+
     private float throwTrashCheckTimer;
 
     public string CurrentStateName => currentState != null ? currentState.GetType().Name : "None";
@@ -39,11 +40,20 @@ public class CharacterStateMachine : MonoBehaviour
         throwTrashCheckTimer = 0f;
     }
 
+    private void Start()
+    {
+        if (character.Blackboard.Workplace != null)
+        {
+            character.Blackboard.TargetDestination = character.Blackboard.Workplace;
+        }
+
+        ChangeCharacterState(CharacterStateType.Move);
+    }
+
     private void Update()
     {
         UpdateTimers();
 
-        // Appeler Act et ManageTransitions de l'état courant
         if (currentState != null)
         {
             currentState.Act();
@@ -68,17 +78,14 @@ public class CharacterStateMachine : MonoBehaviour
         }
     }
 
-    // --- Méthode pour changer d'état ---
     public void ChangeCharacterState(CharacterStateType newStateType)
     {
-        // Détruire ou désactiver l'état courant si nécessaire
         if (currentState != null)
         {
             Destroy(currentState);
             currentState = null;
         }
 
-        // Créer un nouvel état en fonction de l'énumération
         switch (newStateType)
         {
             case CharacterStateType.Move:

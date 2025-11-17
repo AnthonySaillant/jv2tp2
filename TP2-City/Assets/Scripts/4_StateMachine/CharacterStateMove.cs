@@ -7,17 +7,13 @@ public class CharacterStateMove : CharacterBaseState
         base.Awake();
     }
 
-    protected override void Update()
-    {
-        base.Update();
-    }
-
     public override void Act()
     {
         if (blackboard.TargetDestination != null)
         {
             character.NavigateTo(blackboard.TargetDestination);
         }
+
         vitals.RaiseHunger();
         vitals.RaiseLoneliness();
         vitals.RaiseSleepiness();
@@ -29,8 +25,7 @@ public class CharacterStateMove : CharacterBaseState
             blackboard.ShouldThrowTrash)
         {
             stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.ThrowTrash);
-
-            blackboard.ShouldThrowTrash = false;
+            return;
         }
 
         if (blackboard.LastSeenTrash != null)
@@ -38,17 +33,28 @@ public class CharacterStateMove : CharacterBaseState
             Trash trash = blackboard.LastSeenTrash.GetComponent<Trash>();
             if (trash != null && trash.IsAvailable)
             {
+                blackboard.TargetTrash = trash;
                 stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.TakeTrash);
+                return;
             }
         }
+
+
         if (blackboard.LastSeenFriend != null && blackboard.LastSeenFriend.IsAvailable)
         {
             stateMachine.ChangeCharacterState(CharacterStateMachine.CharacterStateType.Greet);
             return;
         }
+
         if (blackboard.TargetDestination != null && character.IsCloseTo(blackboard.TargetDestination))
         {
-            //changer le state selon la destination
+            if (blackboard.NextState.HasValue)
+            {
+                stateMachine.ChangeCharacterState(blackboard.NextState.Value);
+                blackboard.NextState = null;
+            }
+
+            blackboard.TargetDestination = null;
         }
     }
 }
